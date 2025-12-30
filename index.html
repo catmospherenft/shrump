@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHRUMP</title>
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Germania+One&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --shrek-green: #C4D300;
+            --shrek-dark-green: #738025;
+            --swamp-brown: #5d4632;
+            --onion-layer: #F4F1D6;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #1a1a1a;
+            color: #2c2c2c;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23C4D300" stroke="%232a1e14" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>') 12 12, auto;
+        }
+
+        h1, h2, h3, .shrek-font {
+            font-family: 'Germania One', display;
+            text-transform: uppercase;
+        }
+
+        /* Custom Swamp Background */
+        .swamp-bg {
+            background: radial-gradient(circle at center, #2b3a1a 0%, #1a220e 100%);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Bubbles Animation */
+        .bubble {
+            position: absolute;
+            background: rgba(196, 211, 0, 0.3);
+            border-radius: 50%;
+            bottom: -20px;
+            animation: rise 10s infinite ease-in;
+            z-index: -1;
+            border: 1px solid rgba(196, 211, 0, 0.5);
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Flies Animation */
+        .fly {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: black;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        .fly::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px;
+            width: 8px; height: 2px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: buzz 0.1s infinite;
+        }
+        @keyframes buzz {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(20deg); }
+            100% { transform: rotate(-20deg); }
+        }
+        @keyframes flyAround {
+            0% { transform: translate(0,0); }
+            25% { transform: translate(50px, -30px); }
+            50% { transform: translate(-20px, 50px); }
+            75% { transform: translate(-40px, -20px); }
+            100% { transform: translate(0,0); }
+        }
+
+        /* Wood Texture for Containers */
+        .wood-plank {
+            background: repeating-linear-gradient(
+                90deg,
+                #5d4632,
+                #5d4632 10px,
+                #4a3726 12px,
+                #5d4632 24px
+            );
+            border: 4px solid #2a1e14;
+            box-shadow: 0 10px 0 #2a1e14, 0 15px 20px rgba(0,0,0,0.5);
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .wood-plank::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 2px dashed rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+
+        /* Text Stroke Effect */
+        .stroke-text {
+            -webkit-text-stroke: 2px #2a1e14;
+            color: var(--shrek-green);
+            text-shadow: 4px 4px 0px #2a1e14;
+        }
+
+        /* Button Styles */
+        .btn-onion {
+            background: linear-gradient(180deg, #C4D300 0%, #8a9a5b 100%);
+            border: 3px solid #2a1e14;
+            box-shadow: 0 6px 0 #2a1e14;
+            transition: all 0.1s;
+        }
+
+        .btn-onion:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #2a1e14;
+        }
+
+        /* CSS Shrek Ears */
+        .ear-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .ear-left, .ear-right {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            background: var(--shrek-green);
+            border: 3px solid #2a1e14;
+            top: -30px;
+            border-radius: 20px 20px 0 0;
+            z-index: -1;
+        }
+
+        .ear-left {
+            left: -10px;
+            transform: rotate(-30deg);
+        }
+        .ear-left::after {
+             content: "";
+             position: absolute;
+             width: 40px;
+             height: 10px;
+             background: var(--shrek-green);
+             border: 3px solid #2a1e14;
+             border-bottom: none;
+             top: 10px;
+             left: -25px;
+             border-radius: 10px;
+        }
+
+        .ear-right {
+            right: -10px;
+            transform: rotate(30deg);
+        }
+         .ear-right::after {
+             content: "";
+             position: absolute;
+             width: 40px;
+             height: 10px;
+             background: var(--shrek-green);
+             border: 3px solid #2a1e14;
+             border-bottom: none;
+             top: 10px;
+             right: -25px;
+             border-radius: 10px;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shaking-canvas {
+            animation: shake 0.5s;
+            animation-iteration-count: infinite;
+        }
+
+        /* Parchment Sections */
+        .parchment {
+            background-color: #f4f1d6;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+            border: 8px solid #5d4632;
+            box-shadow: inset 0 0 40px rgba(93, 70, 50, 0.4);
+            border-radius: 2px; 
+        }
+
+        /* Mud Splat */
+        .mud-splat {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: #3e2723;
+            border-radius: 50% 40% 60% 30%;
+            pointer-events: none;
+            opacity: 0.8;
+            transform: scale(0);
+            animation: splat 1s forwards;
+            z-index: 100;
+        }
+        @keyframes splat {
+            0% { transform: scale(0); }
+            20% { transform: scale(1.5); }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Canvas Styles */
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border: 4px dashed #2a1e14;
+            background-color: #2b3a1a;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body id="main-body" class="swamp-bg min-h-screen relative">
+
+    <!-- Bubbles Container -->
+    <div id="bubbles-container" class="fixed inset-0 pointer-events-none overflow-hidden h-full w-full"></div>
+    
+    <!-- Flies Container -->
+    <div id="flies-container" class="fixed inset-0 pointer-events-none overflow-hidden h-full w-full z-20"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-4 py-3">
+        <div class="wood-plank max-w-6xl mx-auto px-6 py-3 flex flex-col md:flex-row justify-between items-center transform rotate-1 hover:rotate-0 transition-transform duration-300">
+            <div class="text-2xl shrek-font text-[#C4D300] drop-shadow-lg stroke-text tracking-wider mb-2 md:mb-0">
+                SHRUMP
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 items-center">
+                <a href="#meme-gen" class="text-[#F4F1D6] text-lg hover:text-[#C4D300] transition-colors shrek-font">Meme Maker</a>
+                <a href="http://dexscreener.com/" target="_blank" class="text-[#F4F1D6] text-lg hover:text-[#C4D300] transition-colors shrek-font">Dexscreener</a>
+                <a href="https://pump.fun" target="_blank" class="btn-onion px-4 py-1 rounded-full font-bold text-[#2a1e14] text-base shrek-font transform hover:scale-105">
+                    BUY NOW
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="min-h-screen flex flex-col justify-center items-center text-center px-4 relative pt-24">
+        
+        <div class="relative z-10 floating">
+            <!-- Custom CSS Logo + Image Replacement -->
+            <div class="ear-container mb-6 group">
+                <div class="ear-left group-hover:rotate-[-45deg] transition-transform duration-300"></div>
+                <div class="ear-right group-hover:rotate-[45deg] transition-transform duration-300"></div>
+                <!-- Replaced 'S' with Image -->
+                <div class="w-48 h-48 md:w-64 md:h-64 bg-[#C4D300] rounded-full border-4 border-[#2a1e14] flex items-center justify-center shadow-2xl relative z-10 overflow-hidden">
+                    <img src="images/shrump.png" alt="Shrump" class="w-full h-full object-cover object-center transform hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'shrek-font text-8xl\'>S</span>'">
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-7xl md:text-9xl font-bold stroke-text mb-2 z-10 drop-shadow-xl transform -rotate-2 hover:rotate-2 transition-transform cursor-default">
+            SHRUMP
+        </h1>
+        <p class="text-2xl md:text-4xl text-[#F4F1D6] mb-8 font-bold text-shadow-md bg-[#2a1e14]/50 px-6 py-2 rounded-lg rotate-1 max-w-2xl">
+            "GET OUT OF MY WALLET!"
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-4 z-10">
+            <button onclick="copyContract()" class="wood-plank px-8 py-4 text-[#C4D300] text-xl md:text-2xl font-bold hover:brightness-110 active:scale-95 transition-all">
+                📋 COPY CONTRACT
+            </button>
+            <a href="https://pump.fun" target="_blank" class="btn-onion px-8 py-4 text-[#2a1e14] text-2xl font-bold rounded-lg shadow-lg transform hover:-rotate-1 active:scale-95 flex items-center justify-center">
+                BUY
+            </a>
+        </div>
+        
+        <!-- Contract Address Notification -->
+        <div id="copy-toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-[#C4D300] border-4 border-[#2a1e14] px-6 py-3 rounded-xl hidden z-50 shadow-[0_0_20px_#C4D300]">
+            <p class="shrek-font text-xl text-[#2a1e14]">Copied to Clipboard, Donkey!</p>
+        </div>
+    </header>
+
+    <!-- Meme Generator Section -->
+    <section id="meme-gen" class="py-20 px-4 relative z-20">
+        <div class="max-w-6xl mx-auto">
+            <div class="wood-plank p-8 relative">
+                <!-- Sign hanging effect -->
+                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-[#2a1e14] text-[#C4D300] px-8 py-2 border-2 border-[#C4D300] rounded shrek-font text-3xl shadow-lg z-30">
+                    Meme Maker 3000
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8 mt-6">
+                    <!-- Canvas Area -->
+                    <div class="flex-1 flex justify-center items-center bg-[#1a1a1a]/50 p-4 rounded-lg border-2 border-[#2a1e14] border-dashed">
+                        <canvas id="memeCanvas" width="500" height="500" class="shadow-2xl"></canvas>
+                    </div>
+
+                    <!-- Controls Area -->
+                    <div class="w-full lg:w-96 flex flex-col gap-6">
+                        <div class="parchment p-6">
+                            <h3 class="text-[#2a1e14] shrek-font text-2xl mb-4 border-b-2 border-[#2a1e14] pb-2">Add Text</h3>
+                            
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <button onclick="changeFont(-1)" class="btn-onion px-3 py-1 rounded font-bold text-sm">◀</button>
+                                <span id="font-display" class="flex-1 text-center font-bold text-[#2a1e14]">Germania One</span>
+                                <button onclick="changeFont(1)" class="btn-onion px-3 py-1 rounded font-bold text-sm">▶</button>
+                            </div>
+
+                            <div class="flex items-center gap-2 mb-4 justify-center">
+                                <label class="flex items-center gap-2 cursor-pointer select-none">
+                                    <input type="checkbox" id="stroke-toggle" class="w-5 h-5 accent-[#738025]" checked onchange="updateCurrentText()">
+                                    <span class="text-lg text-[#2a1e14] font-bold">Swamp Stroke</span>
+                                </label>
+                            </div>
+
+                            <div class="flex flex-col gap-2 mb-2">
+                                <textarea id="meme-text-input" placeholder="Type funny stuff here..." class="w-full bg-[#fcfbe8] border-2 border-[#5d4632] rounded p-2 text-[#2a1e14] font-bold outline-none focus:border-[#C4D300] resize-y min-h-[80px] font-[Patrick_Hand] text-xl"></textarea>
+                                <button onclick="addTextLayer(true)" class="btn-onion py-2 rounded-lg font-bold text-[#2a1e14] text-xl shadow hover:brightness-110 active:scale-95 transition-transform">
+                                    + Add Text
+                                </button>
+                            </div>
+                            <p class="text-sm text-[#5d4632] text-center italic mt-2">Double click text to edit. Drag to move.</p>
+                        </div>
+
+                        <button onclick="saveMeme()" class="wood-plank py-4 text-[#C4D300] shrek-font text-3xl hover:brightness-125 active:scale-95 transition-transform text-center">
+                            💾 SAVE MEME
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Socials -->
+    <section id="socials" class="py-16 text-center">
+        <div class="flex justify-center gap-6">
+            <a href="https://x.com/i/communities/2006064506976276698" target="_blank" class="btn-onion px-8 py-4 text-[#2a1e14] text-3xl font-bold rounded-xl shadow-lg transform hover:scale-110 transition-transform shrek-font">
+                Join Community
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f1406] py-10 px-4 border-t-4 border-[#5d4632]">
+        <div class="max-w-4xl mx-auto text-center text-[#738025]">
+            <h3 class="shrek-font text-3xl mb-4 text-[#5d4632]">SHRUMP</h3>
+            <p class="text-xs opacity-50 font-sans">© 2025 Shrump. All rights reserved by the Fairy Godmother.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- ANIMATIONS & EFFECTS ---
+
+        // Bubble Generator
+        function createBubbles() {
+            const container = document.getElementById('bubbles-container');
+            const bubbleCount = 15;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}vw`;
+                bubble.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(bubble);
+            }
+        }
+        createBubbles();
+
+        // Flies Generator
+        function createFlies() {
+            const container = document.getElementById('flies-container');
+            for(let i=0; i<5; i++) {
+                const fly = document.createElement('div');
+                fly.classList.add('fly');
+                fly.style.left = Math.random() * 100 + 'vw';
+                fly.style.top = Math.random() * 100 + 'vh';
+                
+                // Random animation properties
+                fly.style.animation = `flyAround ${5 + Math.random()*5}s infinite linear`;
+                container.appendChild(fly);
+            }
+        }
+        createFlies();
+
+        // Mud Splat on Click
+        document.addEventListener('click', function(e) {
+            // Don't splat on buttons or inputs
+            if(e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('.btn-onion') || e.target.closest('a')) return;
+
+            const splat = document.createElement('div');
+            splat.classList.add('mud-splat');
+            
+            // Center splat on mouse
+            splat.style.left = (e.clientX - 30) + 'px';
+            splat.style.top = (e.clientY - 30) + 'px';
+            
+            // Random rotation
+            splat.style.transform = `rotate(${Math.random() * 360}deg) scale(0)`;
+            
+            document.body.appendChild(splat);
+            
+            setTimeout(() => {
+                splat.remove();
+            }, 1000);
+        });
+
+        // Copy Contract Function
+        function copyContract() {
+            const ca = "0x0000SWAMP0000OGRE0000DONKEY0000";
+            navigator.clipboard.writeText(ca).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 2000);
+            });
+        }
+
+        function doTheRoar() {
+            const body = document.getElementById('main-body');
+            body.classList.add('shaking-canvas');
+            setTimeout(() => {
+                body.classList.remove('shaking-canvas');
+            }, 500);
+        }
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // --- MEME GENERATOR LOGIC ---
+
+        const canvas = document.getElementById('memeCanvas');
+        const ctx = canvas.getContext('2d');
+        const textInputArea = document.getElementById('meme-text-input');
+        
+        // Fonts matching the theme + standard meme fonts
+        const memeFonts = ['Germania One', 'Patrick Hand', 'Impact', 'Arial Black', 'Comic Sans MS'];
+        
+        let currentFontIndex = 0;
+        let textObjects = [];
+        let selectedTextIndex = -1;
+        let isDragging = false;
+        let isResizing = false;
+        let dragTargetIndex = -1;
+        
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Important for avoiding security errors with external images
+        
+        // Load the single template from folder
+        img.src = 'images/shrump.png';
+        
+        img.onload = () => { 
+            resizeCanvasToImage();
+            drawCanvas(); 
+        };
+
+        img.onerror = () => {
+            // Fallback if image missing during dev
+            console.warn("Image not found. Drawing placeholder.");
+            ctx.fillStyle = "#C4D300";
+            ctx.fillRect(0,0,500,500);
+            ctx.fillStyle = "#2a1e14";
+            ctx.font = "30px 'Germania One'";
+            ctx.fillText("SHRUMP IMAGE MISSING", 150, 250);
+        };
+
+        function resizeCanvasToImage() {
+            if (!img.complete || img.naturalWidth === 0) return;
+            // Cap max size for performance, but maintain aspect
+            const maxWidth = 600;
+            let w = img.naturalWidth;
+            let h = img.naturalHeight;
+            
+            if(w > maxWidth) {
+                const ratio = maxWidth / w;
+                w = maxWidth;
+                h = h * ratio;
+            }
+            
+            canvas.width = w;
+            canvas.height = h;
+        }
+
+        function changeFont(direction) {
+            currentFontIndex += direction;
+            if (currentFontIndex < 0) currentFontIndex = memeFonts.length - 1;
+            if (currentFontIndex >= memeFonts.length) currentFontIndex = 0;
+            
+            document.getElementById('font-display').innerText = memeFonts[currentFontIndex];
+            
+            if(selectedTextIndex !== -1) {
+                textObjects[selectedTextIndex].font = memeFonts[currentFontIndex];
+                drawCanvas();
+            }
+        }
+
+        function addTextLayer(isFromButton = false) {
+            let text = isFromButton ? textInputArea.value || "TEXT HERE" : textInputArea.value;
+            if (!text && !isFromButton) return; 
+
+            const useStroke = document.getElementById('stroke-toggle').checked;
+            const scale = canvas.width / 500;
+
+            const newText = {
+                text: text,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                font: memeFonts[currentFontIndex],
+                fontSize: 50 * scale,
+                color: '#fff',
+                stroke: useStroke,
+                strokeColor: '#000',
+                lineWidth: 5 * scale,
+                width: 0, 
+                height: 0 
+            };
+            
+            textObjects.push(newText);
+            selectedTextIndex = textObjects.length - 1;
+            drawCanvas();
+            textInputArea.focus();
+        }
+
+        function updateCurrentText() {
+            const useStroke = document.getElementById('stroke-toggle').checked;
+            if(selectedTextIndex !== -1) {
+                textObjects[selectedTextIndex].stroke = useStroke;
+                drawCanvas();
+            }
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (img.complete && img.naturalHeight !== 0) {
+                try {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                } catch (e) {
+                     // Fallback in case of corruption
+                     ctx.fillStyle = "#222";
+                     ctx.fillRect(0,0, canvas.width, canvas.height);
+                }
+            }
+
+            textObjects.forEach((obj, index) => {
+                ctx.font = `bold ${obj.fontSize}px "${obj.font}"`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const lines = obj.text.split('\n');
+                const lineHeight = obj.fontSize * 1.2;
+                const totalHeight = lines.length * lineHeight;
+                const startY = obj.y - (totalHeight / 2) + (lineHeight / 2);
+
+                lines.forEach((line, i) => {
+                    const lineY = startY + (i * lineHeight);
+                    
+                    if (obj.stroke) {
+                        ctx.strokeStyle = obj.strokeColor;
+                        ctx.lineWidth = obj.lineWidth;
+                        ctx.lineJoin = 'round';
+                        ctx.strokeText(line, obj.x, lineY);
+                    }
+                    
+                    ctx.fillStyle = obj.color;
+                    ctx.fillText(line, obj.x, lineY);
+                });
+
+                // Simple metric approximation for hitting
+                obj.width = ctx.measureText(obj.text).width;
+                obj.height = totalHeight;
+
+                if (index === selectedTextIndex) {
+                    drawSelectionControls(obj);
+                }
+            });
+        }
+
+        function drawSelectionControls(obj) {
+            const padding = 10;
+            const x = obj.x - obj.width/2 - padding;
+            const y = obj.y - obj.height/2 - padding;
+            const w = obj.width + padding*2;
+            const h = obj.height + padding*2;
+
+            ctx.strokeStyle = '#C4D300';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(x, y, w, h);
+            ctx.setLineDash([]);
+
+            // Resize Handle (Bottom Right)
+            ctx.fillStyle = '#C4D300';
+            ctx.fillRect(x + w - 5, y + h - 5, 10, 10);
+            
+            // Delete Handle (Top Right)
+            ctx.fillStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.arc(x + w, y, 8, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        // Mouse Event Handlers
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+            let hit = false;
+            
+            // Check existing text
+            for (let i = textObjects.length - 1; i >= 0; i--) {
+                const obj = textObjects[i];
+                const halfW = obj.width / 2;
+                const halfH = obj.height / 2;
+                
+                // Hit text box
+                if (pos.x >= obj.x - halfW - 20 && pos.x <= obj.x + halfW + 20 &&
+                    pos.y >= obj.y - halfH - 20 && pos.y <= obj.y + halfH + 20) {
+                    
+                    selectedTextIndex = i;
+                    isDragging = true;
+                    dragTargetIndex = i;
+                    
+                    // Check Delete Handle (Top Right approx)
+                    const dxDel = pos.x - (obj.x + halfW + 10);
+                    const dyDel = pos.y - (obj.y - halfH - 10);
+                    if (Math.sqrt(dxDel*dxDel + dyDel*dyDel) < 20) {
+                        textObjects.splice(i, 1);
+                        selectedTextIndex = -1;
+                        isDragging = false;
+                    }
+                    
+                    textInputArea.value = obj.text;
+                    hit = true;
+                    drawCanvas();
+                    return;
+                }
+            }
+            
+            if(!hit) {
+                selectedTextIndex = -1;
+                drawCanvas();
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging && selectedTextIndex !== -1) {
+                const pos = getMousePos(e);
+                textObjects[selectedTextIndex].x = pos.x;
+                textObjects[selectedTextIndex].y = pos.y;
+                drawCanvas();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('dblclick', (e) => {
+             if (selectedTextIndex !== -1) {
+                 textInputArea.focus();
+             }
+        });
+
+        // Touch Support
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", { clientX: touch.clientX, clientY: touch.clientY });
+            canvas.dispatchEvent(mouseEvent);
+        }, false);
+        canvas.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
+            canvas.dispatchEvent(mouseEvent);
+            e.preventDefault(); 
+        }, false);
+        canvas.addEventListener('touchend', () => {
+            const mouseEvent = new MouseEvent("mouseup", {});
+            canvas.dispatchEvent(mouseEvent);
+        }, false);
+
+        textInputArea.addEventListener('input', (e) => {
+            if (selectedTextIndex !== -1) {
+                textObjects[selectedTextIndex].text = e.target.value;
+                drawCanvas();
+            }
+        });
+
+        function saveMeme() {
+            // Deselect to hide handles
+            const temp = selectedTextIndex;
+            selectedTextIndex = -1;
+            drawCanvas();
+            
+            try {
+                const link = document.createElement('a');
+                link.download = 'shrump-meme.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } catch (error) {
+                console.error("Save Error:", error);
+                alert("Donkey! The browser is blocking the save because of security rules with local images (SecurityError). Try opening this site on a local server or hosting it.");
+            }
+            
+            // Reselect
+            selectedTextIndex = temp;
+            drawCanvas();
+        }
+
+    </script>
+</body>
+</html>
